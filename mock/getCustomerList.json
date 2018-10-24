@@ -1,5 +1,4 @@
-{
-customer:
+
 	[
 		{
 			"customerNumber" : 8000123456,
@@ -65,4 +64,3 @@ customer:
 			"dateOfBirth" : "1966-01-01"	
 		}
 	]
-}

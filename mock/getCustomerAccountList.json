@@ -1,5 +1,4 @@
-{
-account:
+
 	[
 		{
 			"customerNumber" : 8000123456,
@@ -48,7 +47,7 @@ account:
 			"accountNumber" : 8000,
 			"accountName" : "HSBC Group Investment Account",
 			"accountType" : "DISC"
-		}，
+		},
 		{
 			"customerNumber" : 8888123456,
 			"accountNumber" : 0001,
@@ -62,4 +61,3 @@ account:
 			"accountType" : "ADV"
 		}
 	]
-}
