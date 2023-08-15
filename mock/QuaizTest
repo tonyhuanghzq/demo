@@ -1,0 +1,49 @@
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+@SpringBootTest
+@TestPropertySource(properties = {
+        "cron.expression.synchronizer.fx.orders=0θθ**?",
+        "cron.expression.synchronizer.heartbeat.update.redis.key=testCron",
+        "cron.expression.synchronizer.fx.limit.orders=0 0θ* * ?",
+        "synchronizer.time.zone=GMT"
+})
+class QuartzConfigTest {
+
+    @Autowired
+    private QuartzConfig quartzConfig;
+
+    @Test
+    void synchronizerFxOrdersToRedisJob_ReturnsJobDetail() {
+        assertNotNull(quartzConfig.synchronizerFxOrdersToRedisJob());
+    }
+
+    @Test
+    void synchronizerHeartbeatToUpdateRedisKeyJob_ReturnsJobDetail() {
+        assertNotNull(quartzConfig.synchronizerHeartbeatToUpdateRedisKeyJob());
+    }
+
+    @Test
+    void synchronizerFxLimitOrdersToRedisJob_ReturnsJobDetail() {
+        assertNotNull(quartzConfig.synchronizerFxLimitOrdersToRedisJob());
+    }
+
+    @Test
+    void synchronizeFxOrdersToRedisJobTrigger_ReturnsTrigger() {
+        assertNotNull(quartzConfig.synchronizeFxOrdersToRedisJobTrigger());
+    }
+
+    @Test
+    void synchronizeHeartbeatToUpdateRedisKeyJobTrigger_ReturnsTrigger() {
+        assertNotNull(quartzConfig.synchronizeHeartbeatToUpdateRedisKeyJobTrigger());
+    }
+
+    @Test
+    void synchronizeFxLimitOrderToRedisJobTrigger_ReturnsTrigger() {
+        assertNotNull(quartzConfig.synchronizeFxLimitOrderToRedisJobTrigger());
+    }
+}
