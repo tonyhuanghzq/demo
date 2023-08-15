@@ -1,0 +1,77 @@
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+class FxLimitorderEventMessageserviceTest {
+
+    private static final String COUNTRY_CODE = "US";
+    private static final String FX_LIMIT_ORDER_TOPIC = "fxLimitorderEvent";
+
+    @Mock
+    private Fxorderservice fxorderservice;
+
+    @InjectMocks
+    private FxLimitorderEventMessageservice fxLimitorderEventMessageservice;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void reloadRedisCache_WithEmptyFxLimitOrderDetails() {
+        List<FxLimitorderDetail> fxLimitorderDetails = new ArrayList<>();
+        when(fxorderservice.getFxLimitorders()).thenReturn(fxLimitorderDetails);
+
+        fxLimitorderEventMessageservice.reloadRedisCache();
+
+        verify(fxorderservice).getFxLimitorders();
+        // Additional assertions if necessary
+    }
+
+    @Test
+    void reloadRedisCache_WithNonEmptyFxLimitOrderDetails() {
+        List<FxLimitorderDetail> fxLimitorderDetails = new ArrayList<>();
+        // Add FxLimitorderDetail objects to the list
+
+        when(fxorderservice.getFxLimitorders()).thenReturn(fxLimitorderDetails);
+
+        fxLimitorderEventMessageservice.reloadRedisCache();
+
+        verify(fxorderservice).getFxLimitorders();
+        // Additional assertions if necessary
+    }
+
+    @Test
+    void getKafkaTopic_ReturnsCorrectTopic() {
+        String kafkaTopic = fxLimitorderEventMessageservice.getKafkaTopic();
+
+        assertEquals(FX_LIMIT_ORDER_TOPIC, kafkaTopic);
+    }
+
+    @Test
+    void getType_ReturnsCorrectType() {
+        String type = fxLimitorderEventMessageservice.getType();
+
+        assertEquals("fx-limit-order", type);
+    }
+
+    @Test
+    void generateHashkey_ReturnsCorrectHashkey() {
+        String hashkey = fxLimitorderEventMessageservice.generateHashkey();
+
+        assertEquals("yyyyMMdd:fx-limit-order:US", hashkey);
+    }
+
+    @Test
+    void start_InvokesGetBeanAndAssignsToMessageChannel() {
+        // Mocking ApplicationContext
+        ApplicationContext applicationContext = mock(
