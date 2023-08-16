@@ -1,0 +1,71 @@
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import static org.mockito.Mockito.*;
+
+@RunWith(MockitoJUnitRunner.class)
+public class FxOrderEventMessageServiceTest {
+    @Mock
+    private FxOrderEventMessageService fxOrderEventMessageService;
+
+    @Mock
+    private FxLimitOrderEventMessageService fxLimitOrderEventMessageService;
+
+    @Mock
+    private ObjectMapper objectMapper;
+
+    @InjectMocks
+    private YourClass yourClass;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    public void testOnMessageWithObjectMessage() throws JsonProcessingException {
+        Message message = mock(ObjectMessage.class);
+        MessageBean messageBean = mock(MessageBean.class);
+        FxLimitOrderDetail fxLimitOrderDetail = mock(FxLimitOrderDetail.class);
+        FxorderDetail fxorderDetail = mock(FxorderDetail.class);
+
+        when(message instanceof ObjectMessage).thenReturn(true);
+        when(yourClass.checkMessageIsEmpty(message)).thenReturn(false);
+        when(yourClass.getFieldFromMessageBean(messageBean, "order_sub_number")).thenReturn("123");
+        when(yourClass.isLimitOrderSkip(fxLimitOrderDetail)).thenReturn(false);
+        when(yourClass.getFxLimitorderByOrderNumberAndorderSubNumber(1, 123)).thenReturn(fxLimitOrderDetail);
+        when(yourClass.getFxOrderService().getFxLimitOrdersByOrderNumber(1)).thenReturn(Collections.singletonList(fxLimitOrderDetail));
+        when(yourClass.getFxOrderService().getFxLimitordersByOriginalOrderNumber(1)).thenReturn(Collections.singletonList(fxLimitOrderDetail));
+        when(yourClass.isLimitorderSkip(fxLimitOrderDetail)).thenReturn(false);
+        when(yourClass.getFxOrderService().getFxOrderByOrderNumberAndOrderSubNumber(1, 123)).thenReturn(fxorderDetail);
+
+        // Call the method under test
+        yourClass.onMessage(message);
+
+        // Verify the expected interactions
+        verify(yourClass).checkAndUpdateOrder(anyString(), anyString(), anyString());
+        verify(fxLimitOrderEventMessageService).produceEventMessage(fxLimitOrderDetail);
+        verify(fxOrderEventMessageService).produceFxOrderEventMessage(fxorderDetail);
+    }
+
+    @Test
+    public void testOnMessageWithUnsupportedMessageType() {
+        Message message = mock(Message.class);
+
+        when(message instanceof ObjectMessage).thenReturn(false);
+        when(yourClass.checkMessageIsEmpty(message)).thenReturn(false);
+
+        // Call the method under test
+        yourClass.onMessage(message);
+
+        // Verify the expected interactions
+        verify(yourClass).logError(ExceptionEnum.MQ_MESSAGE_TYPE_NOT_SUPPORT_EXCEPTION.getMessage());
+    }
+
+    // Add more test methods for other scenarios and methods as needed
+}
